@@ -84,6 +84,9 @@
         }],
       ],
     }],
+    [ 'node_use_bundled_v8=="false"', {
+      'libraries' : [ '<!(pwd)/deps/v8/out.gn/arm.release/obj/libv8_monolith.a' ],
+    }],
     [ 'node_use_v8_platform=="true"', {
       'defines': [
         'NODE_USE_V8_PLATFORM=1',
