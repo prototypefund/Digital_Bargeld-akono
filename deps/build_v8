@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euf -o pipefail
+
+cd $(dirname "$BASH_SOURCE")
+
+NDK=$1
+
+DEST_CPU_ARCH='arm'
+API_LEVEL=26
+BUILD_HOST_TAG='linux-x86_64'
+TOOLCHAIN_DIR=$NDK/toolchains/llvm/prebuilt/$BUILD_HOST_TAG/
+
+if [[ ! -d "$NDK" ]]; then
+  echo "Android NDK directory '$NDK' invalid"
+  exit 1
+fi
+
+ln -fs $NDK ./node/deps/v8/third_party/android_ndk
+
+cd ./node/deps/v8
+
+python2 ./tools/node/fetch_deps.py $PWD
+
+./tools/dev/v8gen.py arm.release -- \
+  'target_os="android"' \
+  'target_cpu="arm"' \
+  'is_component_build=false' \
+  'v8_monolithic=true' \
+  'v8_android_log_stdout=true' \
+  'v8_use_external_startup_data=false'
+
+./_depot_tools/ninja -C out.gn/arm.release v8_monolith
