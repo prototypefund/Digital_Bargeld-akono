@@ -1,11 +1,7 @@
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.android.extensions")
-}
-apply {
-    plugin("kotlin-android")
-    plugin("kotlin-android-extensions")
+    kotlin("android")
+    kotlin("android.extensions")
 }
 
 android {
@@ -39,7 +35,7 @@ android {
     externalNativeBuild {
         cmake {
             //path = File("src/main/cpp/CMakeLists.txt")
-            path = file("src/main/cpp/CMakeLists.txt")
+            setPath(file("src/main/cpp/CMakeLists.txt"))
         }
     }
 
@@ -70,14 +66,14 @@ dependencies {
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
-    androidTestImplementation("androidx.test:core:1.0.0")
+    androidTestImplementation("androidx.test:core:1.1.0")
     androidTestImplementation("androidx.test:runner:1.1.1")
     androidTestImplementation("androidx.test:rules:1.1.1")
 
     // Assertions
-    androidTestImplementation("androidx.test.ext:junit:1.0.0")
-    androidTestImplementation("androidx.test.ext:truth:1.0.0")
-    androidTestImplementation("com.google.truth:truth:0.42")
+    androidTestImplementation("androidx.test.ext:junit:1.1.0")
+    androidTestImplementation("androidx.test.ext:truth:1.1.0")
+    androidTestImplementation("com.google.truth:truth:0.44")
 
     // Use the Kotlin test library.
     androidTestImplementation("org.jetbrains.kotlin:kotlin-test:$kotlin_version")
