@@ -70,6 +70,7 @@
 /third_party/googletest/src/googletest/include/gtest/*
 !/third_party/googletest/src/googletest/include/gtest/gtest_prod.h
 !/third_party/v8
+!/third_party/eu-strip
 /tools/clang
 /tools/gcmole/gcmole-tools
 /tools/gcmole/gcmole-tools.tar.gz

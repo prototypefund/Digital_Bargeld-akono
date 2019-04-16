@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "eu-strip called with arguments $@"
+$STRIP "$@"
