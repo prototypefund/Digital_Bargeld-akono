@@ -17,8 +17,8 @@ android {
         testApplicationId = "akono.test"
 
         ndk {
-          // Tells Gradle to build outputs for the following ABIs and package
-          // them into your APK.
+            // Tells Gradle to build outputs for the following ABIs and package
+            // them into your APK.
             abiFilters("armeabi-v7a");
         }
 
@@ -39,21 +39,25 @@ android {
         }
     }
 
-    // Work around a bug in the android plugin.
-    // Without this extra source set, test cases written in Kotlin are
-    // compiled but not executed.
     sourceSets {
-      named("androidTest") {
-        java.srcDir("src/androidTest/kotlin")
-      }
-      //jniLibs.srcDirs(FIXME)
+        // Work around a bug in the android plugin.
+        // Without this extra source set, test cases written in Kotlin are
+        // compiled but not executed.
+        named("androidTest") {
+            java.srcDir("src/androidTest/kotlin")
+        }
+        // Workaround for AndroidStudio
+        named("main") {
+            java.srcDir("src/main/kotlin")
+        }
+        // jniLibs.srcDirs(FIXME)
     }
 }
 
 val kotlin_version: String by rootProject.extra
 
 repositories {
-  jcenter()
+    jcenter()
 }
 
 dependencies {

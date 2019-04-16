@@ -1,13 +1,26 @@
 # Ignore Gradle project-specific cache directory
-.gradle
+/.gradle
 
 # Ignore Gradle build output directory
-build
+/build
+/library/build
 
 .externalNativeBuild
 
 # Ignore Android Studio project file
 *.iml
+# Ignore Android generated files
+/library/src/main/gen/
+
+# https://intellij-support.jetbrains.com/hc/en-us/articles/206544839-How-to-manage-projects-under-Version-Control-Systems
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/tasks.xml
+/.idea/gradle.xml
+/.idea/usage.statistics.xml
+/.idea/caches/build_file_checksums.ser
 
 # Ignore developer's machine-specific settings
-local.properties
+/local.properties
+
+
