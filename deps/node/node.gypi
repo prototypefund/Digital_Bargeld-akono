@@ -85,7 +85,14 @@
       ],
     }],
     [ 'node_use_bundled_v8=="false"', {
-      'libraries' : [ '<!(pwd)/deps/v8/out.gn/arm.release/obj/libv8_monolith.a' ],
+      'libraries' : [
+         '<!(pwd)/deps/v8/out.gn/arm.debug/libv8_libbase.cr.so',
+         '<!(pwd)/deps/v8/out.gn/arm.debug/libv8_libplatform.cr.so',
+         '<!(pwd)/deps/v8/out.gn/arm.debug/libv8.cr.so',
+         '<!(pwd)/deps/v8/out.gn/arm.debug/libicui18n.cr.so',
+         '<!(pwd)/deps/v8/out.gn/arm.debug/libicuuc.cr.so',
+
+      ],
     }],
     [ 'node_use_v8_platform=="true"', {
       'defines': [
