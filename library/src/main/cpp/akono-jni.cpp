@@ -1,5 +1,7 @@
 #include <string.h>
 #include <jni.h>
+#include <libplatform/libplatform.h>
+#include <v8.h>
 
 /* This is a trivial JNI example where we use a native method
  * to return a new VM String. See the corresponding Java source
@@ -7,9 +9,8 @@
  *
  *   hello-jni/app/src/main/java/com/example/hellojni/HelloJni.java
  */
-JNIEXPORT jstring JNICALL
-Java_akono_AkonoJni_stringFromJNI( JNIEnv* env,
-                                                  jobject thiz )
+extern "C" JNIEXPORT jstring JNICALL
+Java_akono_AkonoJni_stringFromJNI(JNIEnv* env, jobject thiz)
 {
 #if defined(__arm__)
     #if defined(__ARM_ARCH_7A__)
@@ -43,5 +44,15 @@ Java_akono_AkonoJni_stringFromJNI( JNIEnv* env,
 #define ABI "unknown"
 #endif
 
-    return (*env)->NewStringUTF(env, "Hello from JNI !  Compiled with ABI " ABI ".");
+  return env->NewStringUTF("Hello from JNI !  Compiled with ABI " ABI ".");
+}
+
+
+extern "C" JNIEXPORT jstring JNICALL
+Java_akono_AkonoJni_evalJs(JNIEnv* env, jobject thiz, jstring source)
+{
+    std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
+    v8::V8::InitializePlatform(platform.get());
+    v8::V8::Initialize();
+    return env->NewStringUTF("Hello World");
 }

@@ -18,4 +18,10 @@ public class InstrumentedAkonoTestOne {
         val ajni: AkonoJni = AkonoJni()
         assertEquals("foo", ajni.stringFromJNI())
     }
+
+    @Test
+    fun myJsTest() {
+        val ajni: AkonoJni = AkonoJni()
+        assertEquals("2", ajni.evalJs("1+1"));
+    }
 }

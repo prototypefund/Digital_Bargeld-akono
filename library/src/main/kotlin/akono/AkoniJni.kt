@@ -1,11 +1,13 @@
 package akono;
 
 class AkonoJni {
-  external fun stringFromJNI(): String;
+    external fun stringFromJNI(): String;
 
-  companion object {
-    init {
-      System.loadLibrary("akono-jni")
+    external fun evalJs(source: String): String;
+
+    companion object {
+        init {
+            System.loadLibrary("akono-jni")
+        }
     }
-  }
 }

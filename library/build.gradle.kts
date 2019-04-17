@@ -9,10 +9,11 @@ android {
     defaultConfig {
         minSdkVersion(26)
         targetSdkVersion(28)
+
         versionCode = 1
         versionName = "1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Specifies the application ID for the test APK.
         testApplicationId = "akono.test"
 
@@ -22,11 +23,9 @@ android {
             abiFilters("armeabi-v7a");
         }
 
-        //externalNativeBuild {
-        //  cmake {
-        //    
-        //  }
-        //}
+        externalNativeBuild {
+            cmake.arguments("-DANDROID_STL=c++_shared")
+        }
     }
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
@@ -49,8 +48,9 @@ android {
         // Workaround for AndroidStudio
         named("main") {
             java.srcDir("src/main/kotlin")
+            jniLibs.srcDirs("../deps/compiled")
+
         }
-        // jniLibs.srcDirs(FIXME)
     }
 }
 
