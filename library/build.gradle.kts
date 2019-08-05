@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.library")
     kotlin("android")
@@ -33,23 +34,13 @@ android {
 
     externalNativeBuild {
         cmake {
-            //path = File("src/main/cpp/CMakeLists.txt")
             setPath(file("src/main/cpp/CMakeLists.txt"))
         }
     }
 
     sourceSets {
-        // Work around a bug in the android plugin.
-        // Without this extra source set, test cases written in Kotlin are
-        // compiled but not executed.
-        named("androidTest") {
-            java.srcDir("src/androidTest/kotlin")
-        }
-        // Workaround for AndroidStudio
         named("main") {
-            java.srcDir("src/main/kotlin")
             jniLibs.srcDirs("../deps/compiled")
-
         }
     }
 }

@@ -1,7 +1,7 @@
 <component name="libraryTable">
   <library name="Gradle: android.test.mock-android-28">
     <CLASSES>
-      <root url="jar://$USER_HOME$/opt/sdk-tools-linux-4333796/platforms/android-28/optional/android.test.mock.jar!/" />
+      <root url="jar://$USER_HOME$/opt/android-sdk/platforms/android-28/optional/android.test.mock.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

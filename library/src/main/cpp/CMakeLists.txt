@@ -16,6 +16,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 include_directories(
         ${deps_dir}/node/src
         ${deps_dir}/node/deps/v8/include
+        ${deps_dir}/node/deps/uv/include
 )
 
 add_library(node SHARED IMPORTED)

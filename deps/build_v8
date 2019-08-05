@@ -34,6 +34,9 @@ mode=debug
   'is_component_build=true' \
   'v8_android_log_stdout=true' \
   'v8_use_external_startup_data=false' \
+  'v8_use_snapshot=true' \
+  'v8_enable_debugging_features=true' \
+  'v8_enable_embedded_builtins=true' \
   'is_clang=true'
 
 ./_depot_tools/ninja -C out.gn/arm.$mode v8 d8

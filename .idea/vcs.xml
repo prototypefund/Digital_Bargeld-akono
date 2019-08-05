@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/_depot_tools" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/build" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/buildtools" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/buildtools/clang_format/script" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/buildtools/third_party/libc++/trunk" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/buildtools/third_party/libc++abi/trunk" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/buildtools/third_party/libunwind/trunk" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/test/wasm-js" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/third_party/depot_tools" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/third_party/icu" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/third_party/proguard" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/tools/clang" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/deps/node/deps/v8/tools/gyp" vcs="Git" />
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/_depot_tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/build" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/buildtools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/buildtools/clang_format/script" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/buildtools/third_party/libc++/trunk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/buildtools/third_party/libc++abi/trunk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/buildtools/third_party/libunwind/trunk" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/test/wasm-js" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/third_party/depot_tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/third_party/icu" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/third_party/proguard" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/tools/clang" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../deps/node/deps/v8/tools/gyp" vcs="Git" />
   </component>
 </project>
