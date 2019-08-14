@@ -1,0 +1,4 @@
+[submodule "deps/android-node-v8"]
+	path = deps/android-node-v8
+	url = https://git.taler.net/android-node-v8.git
+	branch = androidbuild
