@@ -9,4 +9,4 @@
 
 rootProject.name = "akono"
 
-include(":library")
+include(":akono")
