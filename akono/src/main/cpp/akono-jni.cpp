@@ -237,7 +237,6 @@ public:
                 nodeExecArgv.size(),
                 &nodeExecArgv[0]);
 
-
         mylog("loading environment");
 
         node::LoadEnvironment(environment);
@@ -287,6 +286,7 @@ public:
         this->breakRequested = false;
         while (1) {
             uv_run(uv_default_loop(), UV_RUN_ONCE);
+            platform->DrainTasks(isolate);
             if (this->breakRequested)
                 break;
         }
