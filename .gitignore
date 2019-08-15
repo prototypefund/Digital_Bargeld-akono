@@ -7,8 +7,6 @@
 
 .externalNativeBuild
 
-# Ignore Android Studio project file
-*.iml
 # Ignore Android generated files
 /akono/src/main/gen/
 
