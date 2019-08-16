@@ -132,8 +132,9 @@ static const char *main_code = "global.__akono_run = (x) => {"
                                "  if (res !== false) return res;"
                                "  const args = JSON.stringify({ request, paths});"
                                "  const loadResult = JSON.parse(global.__akono_loadModule(args));"
-                               "  console.log('got loadModule result', loadResult);"
+                               "  console.log('got loadModule result');"
                                "  if (!loadResult) return false;"
+                               "  console.log('loadModule path is', loadResult.path);"
                                "  mod._akonoMods[loadResult.path] = loadResult;"
                                "  console.log('returning path', loadResult.path);"
                                "  return loadResult.path;"
@@ -151,13 +152,34 @@ static const char *main_code = "global.__akono_run = (x) => {"
                                "  console.log('handling js extension', [module, filename]);"
                                "  if (mod._akonoMods.hasOwnProperty(filename)) {"
                                "    const akmod = mod._akonoMods[filename];"
-                               "    console.log('found mod', akmod);"
+                               "    console.log('found mod');"
                                "    const content = akmod.content;"
-                               "    return module._compile(stripBOM(content), filename);"
+                               "    module._compile(stripBOM(content), filename);"
+                               "    return;"
                                "  }"
                                "  console.log('falling back');"
                                "  return mod._saved_js_extension(module, filename);"
-                               "};";
+                               "};"
+                               ""
+                               "mod._saved_json_extension = mod._extensions[\".json\"];"
+                               "mod._extensions[\".json\"] = (module, filename) => {"
+                               "  console.log('handling json extension', [module, filename]);"
+                               "  if (mod._akonoMods.hasOwnProperty(filename)) {"
+                               "    const akmod = mod._akonoMods[filename];"
+                               "    console.log('found mod');"
+                               "    const content = akmod.content;"
+                               "    try {"
+                               "      module.exports = JSON.parse(stripBOM(content));"
+                               "      return;"
+                               "    } catch (err) {"
+                               "      err.message = filename + ': ' + err.message;"
+                               "      throw err;"
+                               "    }"
+                               "  }"
+                               "  console.log('falling back');"
+                               "  return mod._saved_json_extension(module, filename);"
+                               "};"
+                               "";
 
 
 class NativeAkonoInstance {
@@ -223,7 +245,7 @@ public:
         // Arguments for the script run by node
         std::vector<const char *> nodeExecArgv{};
 
-        mylog("entering global scopt");
+        mylog("entering global scope");
 
         v8::Context::Scope context_scope(globalContext.Get(isolate));
 
@@ -283,6 +305,10 @@ public:
      * @param env JNI env of the thread we're running in.
      */
     void runNode() {
+        v8::Isolate::Scope isolate_scope(isolate);
+        v8::HandleScope handle_scope(isolate);
+        v8::Local<v8::Context> context = globalContext.Get(isolate);
+        v8::Context::Scope context_scope(context);
         this->breakRequested = false;
         while (1) {
             uv_run(uv_default_loop(), UV_RUN_ONCE);
@@ -476,8 +502,6 @@ static void loadModuleCallback(const v8::FunctionCallbackInfo<v8::Value> &args) 
 
     JStringValue resultStringValue(env, jresult);
 
-    printf("before creating string, res %s\n", *resultStringValue);
-
     // Create a string containing the JavaScript source code.
     v8::Local<v8::String> rs =
             v8::String::NewFromUtf8(isolate, *resultStringValue,
@@ -531,8 +555,6 @@ static void getDataCallback(const v8::FunctionCallbackInfo<v8::Value> &args) {
     jstring jresult = (jstring) env->CallObjectMethod(myInstance->currentJniThiz, meth, jstr1);
 
     JStringValue resultStringValue(env, jresult);
-
-    printf("before creating string, res %s\n", *resultStringValue);
 
     // Create a string containing the JavaScript source code.
     v8::Local<v8::String> rs =

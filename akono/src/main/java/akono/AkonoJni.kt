@@ -67,9 +67,18 @@ class AkonoJni(vararg nodeArgv: String) {
             val loadInfo = JSONObject(loadInfoStr)
             val request: String = loadInfo.getString("request")
             Log.i("myapp", "request is $request")
+            val paths = ArrayList<String>()
+            val pathsJson = loadInfo.getJSONArray("paths")
+            for (i in 0 until pathsJson.length()) {
+                val path = pathsJson.getString(i)
+                if (path.startsWith("/vmodroot/")) {
+                    paths.add(path)
+                }
+            }
+            paths.add("/vmodroot")
             val handler = loadModuleHandler
             if (handler != null) {
-                val modResult = handler.loadModule(request, arrayOf()) ?: return "null"
+                val modResult = handler.loadModule(request, paths.toTypedArray()) ?: return "null"
                 val result = JSONObject()
                 result.put("path", modResult.path)
                 result.put("content", modResult.contents)
