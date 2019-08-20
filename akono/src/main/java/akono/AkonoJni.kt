@@ -50,9 +50,6 @@ class AkonoJni(vararg nodeArgv: String) {
      */
     @Suppress("unused")
     private fun internalOnNotify(type: String, payload: String) {
-        Log.i("myapp", "internalOnNotify called")
-        Log.i("myapp", "type: $type")
-        Log.i("myapp", "payload: $payload")
         messageHandler?.handleMessage(payload)
     }
 
@@ -61,8 +58,6 @@ class AkonoJni(vararg nodeArgv: String) {
      */
     @Suppress("unused")
     private fun internalOnModuleLoad(loadInfoStr: String): String {
-        Log.i("myapp", "internalOnModuleLoad called")
-        Log.i("myapp", "loadInfoStr is $loadInfoStr")
         try {
             val loadInfo = JSONObject(loadInfoStr)
             val request: String = loadInfo.getString("request")
@@ -84,11 +79,11 @@ class AkonoJni(vararg nodeArgv: String) {
                 result.put("content", modResult.contents)
                 return result.toString()
             } else {
-                Log.v("myapp", "no module load handler registered")
+                Log.w("myapp", "no module load handler registered")
                 return "null"
             }
         } catch (e: Exception) {
-            Log.v("myapp", "exception during internalOnModuleLoad: $e")
+            Log.e("myapp", "exception during internalOnModuleLoad: $e")
             return "null"
         }
     }
@@ -98,11 +93,9 @@ class AkonoJni(vararg nodeArgv: String) {
      */
     @Suppress("unused")
     private fun internalOnGetData(what: String): String? {
-        Log.i("myapp", "internalOnGetData called for $what")
         val data = getDataHandler?.handleGetData(what) ?: return null
         return Base64.encodeToString(data, Base64.NO_WRAP)
     }
-
 
     fun notifyNative() {
         initializedLatch.await()
@@ -198,6 +191,7 @@ class AkonoJni(vararg nodeArgv: String) {
     }
 
     companion object {
+
         init {
             System.loadLibrary("akono-jni")
         }
