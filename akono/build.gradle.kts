@@ -8,7 +8,7 @@ plugins {
 android {
     compileSdkVersion(28)
     defaultConfig {
-        minSdkVersion(26)
+        minSdkVersion(21)
         targetSdkVersion(28)
 
         versionCode = 1

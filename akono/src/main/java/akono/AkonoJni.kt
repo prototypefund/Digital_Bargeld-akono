@@ -13,10 +13,10 @@ typealias AkonoNativePointer = ByteBuffer
 
 data class ModuleResult(val path: String, val contents: String)
 
+private val TAG = "AkonoJni"
+
 class AkonoJni(vararg nodeArgv: String) {
-    private var getDataHandler: GetDataHandler? = null
     private var messageHandler: MessageHandler? = null
-    private var loadModuleHandler: LoadModuleHandler? = null
     private val initializedLatch = CountDownLatch(1)
 
     private val workQueue = LinkedBlockingDeque<() -> Unit>()
@@ -53,49 +53,6 @@ class AkonoJni(vararg nodeArgv: String) {
         messageHandler?.handleMessage(payload)
     }
 
-    /**
-     * Called by node/v8 from its thread.
-     */
-    @Suppress("unused")
-    private fun internalOnModuleLoad(loadInfoStr: String): String {
-        try {
-            val loadInfo = JSONObject(loadInfoStr)
-            val request: String = loadInfo.getString("request")
-            Log.i("myapp", "request is $request")
-            val paths = ArrayList<String>()
-            val pathsJson = loadInfo.getJSONArray("paths")
-            for (i in 0 until pathsJson.length()) {
-                val path = pathsJson.getString(i)
-                if (path.startsWith("/vmodroot/")) {
-                    paths.add(path)
-                }
-            }
-            paths.add("/vmodroot")
-            val handler = loadModuleHandler
-            if (handler != null) {
-                val modResult = handler.loadModule(request, paths.toTypedArray()) ?: return "null"
-                val result = JSONObject()
-                result.put("path", modResult.path)
-                result.put("content", modResult.contents)
-                return result.toString()
-            } else {
-                Log.w("myapp", "no module load handler registered")
-                return "null"
-            }
-        } catch (e: Exception) {
-            Log.e("myapp", "exception during internalOnModuleLoad: $e")
-            return "null"
-        }
-    }
-
-    /**
-     * Called by node/v8 from its thread.
-     */
-    @Suppress("unused")
-    private fun internalOnGetData(what: String): String? {
-        val data = getDataHandler?.handleGetData(what) ?: return null
-        return Base64.encodeToString(data, Base64.NO_WRAP)
-    }
 
     fun notifyNative() {
         initializedLatch.await()
@@ -142,7 +99,7 @@ class AkonoJni(vararg nodeArgv: String) {
      *
      */
     fun waitStopped(): Unit {
-        Log.i("myapp", "waiting for stop")
+        Log.i(TAG, "waiting for stop")
         scheduleNodeThread {
             stopped = true
         }
@@ -160,13 +117,6 @@ class AkonoJni(vararg nodeArgv: String) {
         this.messageHandler = handler
     }
 
-    fun setLoadModuleHandler(handler: LoadModuleHandler) {
-        this.loadModuleHandler = handler
-    }
-
-    fun setGetDataHandler(handler: GetDataHandler) {
-        this.getDataHandler = handler
-    }
 
     @Override
     protected fun finalize() {
