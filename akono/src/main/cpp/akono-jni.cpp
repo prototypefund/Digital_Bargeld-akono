@@ -1,9 +1,27 @@
+/*
+ This file is part of GNU Taler
+ (C) 2019 GNUnet e.V.
+
+ GNU Taler is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 3, or (at your option) any later version.
+
+ GNU Taler is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with
+ GNU Taler; see the file COPYING.  If not, see <http://www.gnu.org/licenses/>
+ */
+
 #include <sys/types.h>
 #include <sys/syscall.h>
 #include <cstring>
+#include <map>
 #include <jni.h>
 #include <libplatform/libplatform.h>
 #include <v8.h>
+#include <android/asset_manager.h>
 
 #define NODE_WANT_INTERNALS 1 // NOLINT(cppcoreguidelines-macro-usage)
 
@@ -15,6 +33,9 @@
 #include <node_main_instance.h>
 #include <node_binding.h>
 #include <node_native_module_env.h>
+
+
+void _register_akono();
 
 // Provide stubs so that libnode.so links properly
 namespace node {
@@ -33,10 +54,15 @@ namespace node {
     }
 }
 
+/**
+ * Mapping from module name to a string with the module's code.
+ */
+std::map<std::string, char *> modmap;
+
 
 static int pfd[2];
 static pthread_t thr;
-static const char *tag = "myapp";
+static const char *tag = "akono-jni.cpp";
 
 
 static void *thread_func(void *) {
@@ -54,9 +80,7 @@ static void mylog(const char *msg) {
     __android_log_write(ANDROID_LOG_DEBUG, tag, msg);
 }
 
-int start_logger(const char *app_name) {
-    tag = app_name;
-
+int start_logger() {
     /* make stdout line-buffered and stderr unbuffered */
     setvbuf(stdout, 0, _IOLBF, 0);
     setvbuf(stderr, 0, _IONBF, 0);
@@ -139,12 +163,13 @@ public:
     jobject currentJniThiz = nullptr;
 
     NativeAkonoInstance() : globalContext() {
+        _register_akono();
         loop = uv_default_loop();
         uv_async_init(loop, &async_notify, notifyCb);
         async_notify.data = this;
 
         if (!logInitialized) {
-            start_logger("myapp");
+            start_logger();
             logInitialized = true;
         }
 
@@ -164,7 +189,6 @@ public:
 
         node::ArrayBufferAllocator *allocator = node::CreateArrayBufferAllocator();
         this->isolate = node::NewIsolate(allocator, uv_default_loop());
-
 
         v8::Isolate::Scope isolate_scope(isolate);
         v8::HandleScope handle_scope(isolate);
@@ -208,9 +232,9 @@ public:
 
         v8::Local<v8::Object> global = context->Global();
 
-        global->Set(v8::String::NewFromUtf8(isolate, "__akono_sendMessage",
+        global->Set(context, v8::String::NewFromUtf8(isolate, "__akono_sendMessage",
                                             v8::NewStringType::kNormal).ToLocalChecked(),
-                    sendMessageFunction);
+                    sendMessageFunction).Check();
 
     }
 
@@ -220,7 +244,7 @@ public:
      * @param env JNI env of the thread we're running in.
      */
     void runNode() {
-        //printf("running node loop, tid=%llu\n", (unsigned long long) syscall(__NR_gettid));
+        //printf("blup running node loop, tid=%llu\n", (unsigned long long) syscall(__NR_gettid));
         v8::Locker locker(isolate);
         v8::Isolate::Scope isolate_scope(isolate);
         v8::HandleScope handle_scope(isolate);
@@ -260,6 +284,7 @@ public:
 
     jstring evalJs(JNIEnv *env, jstring sourceString) {
         JStringValue jsv(env, sourceString);
+        v8::Locker locker(isolate);
 
         v8::Isolate::Scope isolate_scope(isolate);
 
@@ -314,8 +339,9 @@ void notifyCb(uv_async_t *async) {
 }
 
 static void sendMessageCallback(const v8::FunctionCallbackInfo<v8::Value> &args) {
-    if (args.Length() < 1) return;
     v8::Isolate *isolate = args.GetIsolate();
+    v8::Locker locker(isolate);
+    if (args.Length() < 1) return;
     v8::HandleScope scope(isolate);
     v8::Local<v8::Value> arg = args[0];
     v8::String::Utf8Value value(isolate, arg);
@@ -351,6 +377,34 @@ static void sendMessageCallback(const v8::FunctionCallbackInfo<v8::Value> &args)
     env->CallVoidMethod(myInstance->currentJniThiz, meth, jstr1, jstr2);
 }
 
+static void dummy(const v8::FunctionCallbackInfo<v8::Value> &args) {
+
+}
+
+static void getModuleCode(const v8::FunctionCallbackInfo<v8::Value> &args) {
+    if (args.Length() < 1) return;
+    v8::Isolate *isolate = args.GetIsolate();
+    v8::Locker locker(isolate);
+    v8::HandleScope scope(isolate);
+    v8::Local<v8::Value> arg = args[0];
+    v8::String::Utf8Value value(isolate, arg);
+
+    printf("handling request for module %s\n", *value);
+
+    std::string modName(*value);
+
+    char *code = modmap[modName];
+
+    if (!code) {
+        printf("module not found in modmap %s\n", *value);
+        return;
+    }
+    printf("found module in modmap %s\n", *value);
+    args.GetReturnValue().Set(v8::String::NewFromUtf8(isolate, code,
+                            v8::NewStringType::kNormal).ToLocalChecked());
+
+}
+
 extern "C" JNIEXPORT jobject JNICALL
 Java_akono_AkonoJni_initNative(JNIEnv *env, jobject thiz) {
     NativeAkonoInstance *myInstance = new NativeAkonoInstance();
@@ -369,6 +423,16 @@ extern "C" JNIEXPORT jstring JNICALL
 Java_akono_AkonoJni_evalJs(JNIEnv *env, jobject thiz, jstring sourceStr, jobject buf) {
     NativeAkonoInstance *myInstance = (NativeAkonoInstance *) env->GetDirectBufferAddress(buf);
     return myInstance->evalJs(env, sourceStr);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_akono_AkonoJni_putModuleCodeNative(JNIEnv *env, jobject thiz, jstring modName, jstring modCode) {
+    mylog("in putModuleCodeNative");
+    JStringValue cModName(env, modName);
+    JStringValue cModCode(env, modCode);
+    std::string cppModName(strdup(*cModName));
+    modmap[cppModName] = strdup(*cModCode);
+    mylog("registered module");
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -398,6 +462,7 @@ void InitializeAkono(v8::Local<v8::Object> target,
                 v8::Local<v8::Value> unused,
                 v8::Local<v8::Context> context,
                 void* priv) {
+    NODE_SET_METHOD(target, "getModuleCode", getModuleCode);
 }
 
 NODE_MODULE_CONTEXT_AWARE_INTERNAL(akono, InitializeAkono)

@@ -21,7 +21,10 @@ android {
         ndk {
             // Tells Gradle to build outputs for the following ABIs and package
             // them into your APK.
-            abiFilters("armeabi-v7a");
+            abiFilters("armeabi-v7a")
+            abiFilters("arm64-v8a")
+            abiFilters("x86")
+            abiFilters("x86_64")
         }
 
         externalNativeBuild {

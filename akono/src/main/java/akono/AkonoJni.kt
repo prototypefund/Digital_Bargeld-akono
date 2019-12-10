@@ -11,8 +11,6 @@ import kotlin.concurrent.thread
 
 typealias AkonoNativePointer = ByteBuffer
 
-data class ModuleResult(val path: String, val contents: String)
-
 private val TAG = "AkonoJni"
 
 class AkonoJni(vararg nodeArgv: String) {
@@ -25,6 +23,7 @@ class AkonoJni(vararg nodeArgv: String) {
     private external fun runNode(p: AkonoNativePointer)
 
     private external fun makeCallbackNative(source: String, p: AkonoNativePointer)
+    private external fun putModuleCodeNative(key: String, source: String)
 
     private external fun destroyNative(b: AkonoNativePointer)
     private external fun initNative(nodeArgv: Array<out String>): AkonoNativePointer
@@ -95,9 +94,6 @@ class AkonoJni(vararg nodeArgv: String) {
         evalNodeCode(source)
     }
 
-    /**
-     *
-     */
     fun waitStopped(): Unit {
         Log.i(TAG, "waiting for stop")
         scheduleNodeThread {
@@ -105,6 +101,11 @@ class AkonoJni(vararg nodeArgv: String) {
         }
         jniThread.join()
         return
+    }
+
+    fun putModuleCode(modName: String, code: String) {
+        Log.v(TAG, "putting module code (kotlin)")
+        putModuleCodeNative(modName, code)
     }
 
     /**
@@ -141,7 +142,6 @@ class AkonoJni(vararg nodeArgv: String) {
     }
 
     companion object {
-
         init {
             System.loadLibrary("akono-jni")
         }
@@ -149,13 +149,5 @@ class AkonoJni(vararg nodeArgv: String) {
 
     interface MessageHandler {
         fun handleMessage(message: String)
-    }
-
-    interface LoadModuleHandler {
-        fun loadModule(name: String, paths: Array<String>): ModuleResult?
-    }
-
-    interface GetDataHandler {
-        fun handleGetData(what: String): ByteArray?
     }
 }

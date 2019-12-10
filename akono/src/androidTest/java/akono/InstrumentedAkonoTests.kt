@@ -22,24 +22,6 @@ class SyncMessageHandler : AkonoJni.MessageHandler {
     }
 }
 
-
-class StaticModuleLoadHandler : AkonoJni.LoadModuleHandler {
-    private val modules: MutableMap<String, String> = HashMap()
-
-    override fun loadModule(name: String, paths: Array<String>): ModuleResult? {
-        val code = modules.get(name) ?: return null
-        if (modules.containsKey(name)) {
-            return ModuleResult("/vmodroot/$name.js", code)
-        }
-        return null
-    }
-
-    fun registerModule(name: String, source: String) {
-        modules[name] = source
-    }
-}
-
-
 // @RunWith is required only if you use a mix of JUnit3 and JUnit4.
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -47,6 +29,7 @@ public class InstrumentedAkonoTestOne {
     @Test
     fun myJsTest() {
         val ajni: AkonoJni = AkonoJni()
+        ajni.putModuleCode("a", "function foo() {}")
         assertEquals("2", ajni.evalSimpleJs("1+1"))
         assertEquals("36", ajni.evalSimpleJs("6*6"))
         assertEquals("42", ajni.evalSimpleJs("(()=>{let x = 42; return x;})()"))
@@ -64,21 +47,13 @@ public class InstrumentedAkonoTestOne {
         assertEquals(sentMessage, receivedMessage)
         Log.i("myapp", "test case received message: $receivedMessage")
 
-        val myModHandler = StaticModuleLoadHandler()
-
-        ajni.setLoadModuleHandler(myModHandler)
-
-        myModHandler.registerModule("a", """
-            |console.log('I am module a');
-            |exports.foo = () => { global.__akono_sendMessage('hello42'); };
-        """.trimMargin())
-
+        ajni.evalNodeCode("require('akono');")
         ajni.evalNodeCode("a = require('a');")
-        ajni.evalNodeCode("a.foo()")
+        //ajni.evalNodeCode("a.foo()")
 
-        val msg2 = myHandler.waitForMessage()
+        //val msg2 = myHandler.waitForMessage()
 
-        assertEquals("hello42", msg2)
+        //assertEquals("hello42", msg2)
 
         ajni.waitStopped()
     }
