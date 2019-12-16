@@ -6,7 +6,6 @@ import org.junit.Test
 import androidx.test.filters.LargeTest
 import org.junit.Assert.assertEquals
 import akono.AkonoJni
-import akono.ModuleResult
 import android.util.Log
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -25,7 +24,7 @@ class SyncMessageHandler : AkonoJni.MessageHandler {
 // @RunWith is required only if you use a mix of JUnit3 and JUnit4.
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-public class InstrumentedAkonoTestOne {
+class InstrumentedAkonoTestOne {
     @Test
     fun myJsTest() {
         val ajni: AkonoJni = AkonoJni()

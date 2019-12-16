@@ -2,7 +2,6 @@ package akono
 
 import android.util.Base64
 import android.util.Log
-import org.json.JSONObject
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.util.concurrent.CountDownLatch
@@ -47,8 +46,7 @@ class AkonoJni(vararg nodeArgv: String) {
     /**
      * Called by node/v8 from its thread.
      */
-    @Suppress("unused")
-    private fun internalOnNotify(type: String, payload: String) {
+    private fun internalOnNotify(payload: String) {
         messageHandler?.handleMessage(payload)
     }
 

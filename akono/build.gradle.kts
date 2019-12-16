@@ -6,10 +6,10 @@ plugins {
 }
 
 android {
-    compileSdkVersion(28)
+    compileSdkVersion(29)
     defaultConfig {
         minSdkVersion(21)
-        targetSdkVersion(28)
+        targetSdkVersion(29)
 
         versionCode = 1
         versionName = "1.0"
@@ -30,6 +30,8 @@ android {
         externalNativeBuild {
             cmake.arguments("-DANDROID_STL=c++_shared")
         }
+
+        consumerProguardFiles("proguard-rules.pro")
     }
     useLibrary("android.test.runner")
     useLibrary("android.test.base")
@@ -64,13 +66,13 @@ dependencies {
     // Use the Kotlin JUnit integration.
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
-    androidTestImplementation("androidx.test:core:1.1.0")
-    androidTestImplementation("androidx.test:runner:1.1.1")
-    androidTestImplementation("androidx.test:rules:1.1.1")
+    androidTestImplementation("androidx.test:core:1.2.0")
+    androidTestImplementation("androidx.test:runner:1.2.0")
+    androidTestImplementation("androidx.test:rules:1.2.0")
 
     // Assertions
-    androidTestImplementation("androidx.test.ext:junit:1.1.0")
-    androidTestImplementation("androidx.test.ext:truth:1.1.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.1")
+    androidTestImplementation("androidx.test.ext:truth:1.2.0")
     androidTestImplementation("com.google.truth:truth:0.44")
 
     // Use the Kotlin test library.

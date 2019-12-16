@@ -364,21 +364,16 @@ static void sendMessageCallback(const v8::FunctionCallbackInfo<v8::Value> &args)
         return;
     }
 
-    jstring jstr1 = env->NewStringUTF("message");
-    jstring jstr2 = env->NewStringUTF(*value);
+    jstring payloadStr = env->NewStringUTF(*value);
 
-    jmethodID meth = env->GetMethodID(clazz, "internalOnNotify", "(Ljava/lang/String;Ljava/lang/String;)V");
+    jmethodID meth = env->GetMethodID(clazz, "internalOnNotify", "(Ljava/lang/String;)V");
 
     if (meth == nullptr) {
         mylog("FATAL: method not found");
         return;
     }
 
-    env->CallVoidMethod(myInstance->currentJniThiz, meth, jstr1, jstr2);
-}
-
-static void dummy(const v8::FunctionCallbackInfo<v8::Value> &args) {
-
+    env->CallVoidMethod(myInstance->currentJniThiz, meth, payloadStr);
 }
 
 static void getModuleCode(const v8::FunctionCallbackInfo<v8::Value> &args) {
@@ -434,6 +429,7 @@ Java_akono_AkonoJni_putModuleCodeNative(JNIEnv *env, jobject thiz, jstring modNa
     modmap[cppModName] = strdup(*cModCode);
     mylog("registered module");
 }
+
 
 extern "C" JNIEXPORT void JNICALL
 Java_akono_AkonoJni_notifyNative(JNIEnv *env, jobject thiz, jobject buf) {
